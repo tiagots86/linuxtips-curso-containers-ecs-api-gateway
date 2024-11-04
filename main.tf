@@ -31,6 +31,27 @@ resource "aws_api_gateway_stage" "health_api" {
     vpcLinkId = data.aws_ssm_parameter.vpc_link.value
   }
 
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.health_api.arn
+    format = jsonencode({
+      requestId         = "$context.requestId",
+      ip                = "$context.identity.sourceIp",
+      caller            = "$context.identity.caller",
+      user              = "$context.identity.user",
+      requestTime       = "$context.requestTime",
+      httpMethod        = "$context.httpMethod",
+      resourcePath      = "$context.resourcePath",
+      status            = "$context.status",
+      protocol          = "$context.protocol",
+      responseLength    = "$context.responseLength",
+      responseTime      = "$context.responseLatency",
+      responseBody      = "$context.responseBody",
+      integrationStatus = "$context.integrationStatus",
+      errorMessage      = "$context.error.message",
+      errorType         = "$context.error.responseType"
+    })
+  }
+
 }
 
 resource "aws_api_gateway_method_settings" "health_api" {
@@ -40,8 +61,11 @@ resource "aws_api_gateway_method_settings" "health_api" {
   method_path = "*/*"
 
   settings {
-    throttling_rate_limit  = 1
-    throttling_burst_limit = 1
+    throttling_rate_limit  = 10
+    throttling_burst_limit = 10
+
+    #Métricas
+    logging_level = "INFO"
   }
 
 }
