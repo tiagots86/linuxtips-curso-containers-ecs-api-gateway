@@ -66,6 +66,9 @@ resource "aws_api_gateway_method_settings" "health_api" {
 
     #Métricas
     logging_level = "INFO"
+
+    metrics_enabled = true
+    data_trace_enabled = true
   }
 
 }
