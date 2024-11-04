@@ -1,9 +1,11 @@
 resource "aws_api_gateway_rest_api" "health_api" {
-    name = format("%s-%s", var.project_name, var.environment)
+  name = format("%s-%s", var.project_name, var.environment)
 
-    description = "API para calcular macros"
+  body = file("${path.module}/environment/${var.environment}/openapi.json")
 
-    endpoint_configuration {
-      types = ["REGIONAL"]
-    }
+  description = "API para calcular macros"
+
+  endpoint_configuration {
+    types = ["REGIONAL"]
+  }
 }
